@@ -5,6 +5,7 @@ const { SoundCloudPlugin } = require("@distube/soundcloud");
 const { YtDlpPlugin } = require("@distube/yt-dlp");
 const config = require("./config");
 const fs = require("fs");
+
 const client = new Client({
   partials: [
     Partials.Channel, // for text channel
