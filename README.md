@@ -1,4 +1,4 @@
-# Custon Extended Fork of MusicBot
+# Custom Extended Fork of MusicBot
 
 # Discord.js v14 Slash Commands Music Bot
 ![](https://komarev.com/ghpvc/?username=umutxyp&color=blue)
