@@ -88,16 +88,29 @@ module.exports = {
         new ButtonBuilder()
           .setLabel("Earwax")
           .setCustomId("earwax")
-          .setStyle(ButtonStyle.Secondary)
+          .setStyle(ButtonStyle.Secondary),
       );
+
+      let buttons4 = new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+          .setLabel("Clear filters")
+          .setCustomId("clear")
+          .setStyle(ButtonStyle.Secondary),
+      );
+
+      // let embed = new EmbedBuilder()
+      //   .setColor(client.config.embedColor)
+      //   .setTitle("Select a filter.")
+      //   .setTimestamp()
+      //   .setFooter({ text: `Choose wisely.` });
 
       let embed = new EmbedBuilder()
         .setColor(client.config.embedColor)
         .setTitle("Select a filter.")
-        .setTimestamp()
-        .setFooter({ text: `codeshare.me | Umut Bayraktar ❤️` });
+        .setFooter({ text: `Choose wisely.` });
+        
       interaction
-        .reply({ embeds: [embed], components: [buttons, buttons2, buttons3] })
+        .reply({ embeds: [embed], components: [buttons, buttons2, buttons3, buttons4] })
         .then(async (Message) => {
           const filter = (i) => i.user.id === interaction.user.id;
           let col = await interaction.channel.createMessageComponentCollector({
@@ -124,6 +137,7 @@ module.exports = {
               "phaser",
               "tremolo",
               "earwax",
+              "clear"
             ];
             if (!filters.includes(button.customId)) return;
 
@@ -134,24 +148,45 @@ module.exports = {
                 .catch((e) => {});
             filtre = filtre.toLowerCase();
 
-            if (filters.includes(filtre.toLowerCase())) {
+            if (queue.filters.collection.size > 0) {
+              console.log(`Current filters: ${Array.from(queue.filters.collection.keys())}.`);
+            } else {
+              console.log(`No filters currently selected.`);
+            }
+
+            if (filtre === "clear") {
+              console.log("Clearing all filters.");
+              filters.forEach((elem) => {
+                if (elem !== "clear" && queue.filters.has(elem)) queue.filters.remove(elem);
+              });
+              embed.setDescription(
+                "All filters have been removed!"
+              );
+              return interaction
+                .editReply({ embeds: [embed] })
+                .catch((e) => {});
+            }
+
+            if (filters.includes(filtre)) {
               if (queue.filters.has(filtre)) {
+                console.log(`Removing filter ${filtre}.`);
                 queue.filters.remove(filtre);
                 embed.setDescription(
                   lang.msg31
                     .replace("{filter}", filtre)
                     .replace("{status}", "❌")
-                );
+                ).setFooter({ text: "Swag." });
                 return interaction
                   .editReply({ embeds: [embed] })
                   .catch((e) => {});
               } else {
+                console.log(`Adding filter ${filtre}.`);
                 queue.filters.add(filtre);
                 embed.setDescription(
                   lang.msg31
                     .replace("{filter}", filtre)
                     .replace("{status}", "✅")
-                );
+                ).setFooter({ text: "Swag." });;
                 return interaction
                   .editReply({ embeds: [embed] })
                   .catch((e) => {});
@@ -175,15 +210,15 @@ module.exports = {
 
           col.on("end", async (button, reason) => {
             if (reason === "time") {
-              embed = new EmbedBuilder()
-                .setColor(client.config.embedColor)
-                .setTitle("Time ended.")
-                .setTimestamp()
-                .setFooter({ text: `codeshare.me | Umut Bayraktar ❤️` });
+              // embed = new EmbedBuilder()
+              //   .setColor(client.config.embedColor)
+              //   .setTitle("Time ended.")
+              //   .setTimestamp()
+              //   .setFooter({ text: `codeshare.me | Umut Bayraktar ❤️` });
 
-              await interaction
-                .editReply({ embeds: [embed], components: [] })
-                .catch((e) => {});
+              // await interaction
+              //   .editReply({ embeds: [embed], components: [] })
+              //   .catch((e) => {});
             }
           });
         });
